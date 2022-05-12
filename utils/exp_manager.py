@@ -20,6 +20,7 @@ from sb3_contrib.common.vec_env import AsyncEval
 
 # For using HER with GoalEnv
 from stable_baselines3 import HerReplayBuffer  # noqa: F401
+from stable_baselines3.common.buffers import MultiAgentReplayBuffer  # noqa: F401
 from stable_baselines3.common.base_class import BaseAlgorithm
 from stable_baselines3.common.callbacks import BaseCallback, CheckpointCallback, EvalCallback
 from stable_baselines3.common.env_util import make_vec_env
@@ -30,6 +31,7 @@ from stable_baselines3.common.utils import constant_fn
 from stable_baselines3.common.vec_env import (
     DummyVecEnv,
     SubprocVecEnv,
+    MultiagentVecEnv,
     VecEnv,
     VecFrameStack,
     VecNormalize,
@@ -104,7 +106,10 @@ class ExperimentManager:
         self.seed = seed
         self.optimization_log_path = optimization_log_path
 
-        self.vec_env_class = {"dummy": DummyVecEnv, "subproc": SubprocVecEnv}[vec_env_type]
+        self.vec_env_class = {"dummy": DummyVecEnv,
+                              "subproc": SubprocVecEnv,
+                              "multiagent": MultiagentVecEnv,
+                              }[vec_env_type]
 
         self.vec_env_kwargs = {}
         # self.vec_env_kwargs = {} if vec_env_type == "dummy" else {"start_method": "fork"}
@@ -632,6 +637,8 @@ class ExperimentManager:
         trial.n_actions = self.n_actions
         # Hack when using HerReplayBuffer
         trial.using_her_replay_buffer = kwargs.get("replay_buffer_class") == HerReplayBuffer
+        # Hack when using MultiAgentReplayBuffer
+        trial.using_her_replay_buffer = kwargs.get("replay_buffer_class") == MultiAgentReplayBuffer
         if trial.using_her_replay_buffer:
             trial.her_kwargs = kwargs.get("replay_buffer_kwargs", {})
         # Sample candidate hyperparameters

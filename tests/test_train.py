@@ -101,3 +101,12 @@ def test_parallel_train(tmp_path):
 
     return_code = subprocess.call(["python", "train.py"] + args)
     _assert_eq(return_code, 0)
+
+def test_ma_train():
+    algo, env_id = "td3", "parking-ma-v0"
+    args = ["-n", str(N_STEPS), "--algo", algo, "--env", env_id,
+            "--vec-env", "multiagent",
+            "--tensorboard-log", "./logs/feat/parking_tensorboard/matd3"]
+
+    return_code = subprocess.call(["python", "../train.py"] + args)
+    _assert_eq(return_code, 0)
