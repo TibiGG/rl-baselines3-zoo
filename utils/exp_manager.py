@@ -19,7 +19,7 @@ from optuna.visualization import plot_optimization_history, plot_param_importanc
 from sb3_contrib.common.vec_env import AsyncEval
 
 # For using HER with GoalEnv
-from stable_baselines3 import HerReplayBuffer  # noqa: F401
+from stable_baselines3 import HerReplayBuffer, HerMAReplayBuffer  # noqa: F401
 from stable_baselines3.common.buffers import MultiAgentReplayBuffer  # noqa: F401
 from stable_baselines3.common.base_class import BaseAlgorithm
 from stable_baselines3.common.callbacks import BaseCallback, CheckpointCallback, EvalCallback
@@ -636,9 +636,9 @@ class ExperimentManager:
         # Hack to use DDPG/TD3 noise sampler
         trial.n_actions = self.n_actions
         # Hack when using HerReplayBuffer
-        trial.using_her_replay_buffer = kwargs.get("replay_buffer_class") == HerReplayBuffer
-        # Hack when using MultiAgentReplayBuffer
-        trial.using_her_replay_buffer = kwargs.get("replay_buffer_class") == MultiAgentReplayBuffer
+        trial.using_her_replay_buffer =\
+            kwargs.get("replay_buffer_class") == HerReplayBuffer\
+            or kwargs.get("replay_buffer_class") == HerMAReplayBuffer
         if trial.using_her_replay_buffer:
             trial.her_kwargs = kwargs.get("replay_buffer_kwargs", {})
         # Sample candidate hyperparameters

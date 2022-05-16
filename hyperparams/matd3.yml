@@ -6,6 +6,12 @@ parking-ma-v0:
   learning_rate: !!float 1e-3
   gamma: 0.95
   batch_size: 256
-  replay_buffer_class: MultiAgentReplayBuffer
+  replay_buffer_class: HerMAReplayBuffer
+  replay_buffer_kwargs: "dict(
+    n_sampled_goal=4,
+    goal_selection_strategy='future',
+    online_sampling=True,
+    max_episode_length=100,
+  )"
   policy_kwargs: "dict(net_arch=[256, 256, 256])"
   is_marl: True
